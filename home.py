@@ -8,6 +8,8 @@ from bson import ObjectId
 import os
 import pathlib
 import requests
+import sys
+sys.path.append("/opt/homebrew/lib/python3.9/site-packages")
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
@@ -27,10 +29,6 @@ app.config['MAIL_PASSWORD'] = '5cf7ecffae5846'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
-# app.config['MAIL_DEBUG'] = True
-# app.config['MAIL_SUPRESS_SEND'] = False
-# app.config['TESTING'] = True
-
 mail = Mail(app)
 
 #SSO
@@ -43,6 +41,7 @@ flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores al
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "openid"],  #here we are specifing what do we get after the authorization "https://www.googleapis.com/auth/userinfo.email"
     redirect_uri="http://127.0.0.1:5000/callback"  #and the redirect URI is the point where the user will end up after the authorization
 )
+
 def login_is_required(function):  #a function to check if the user is authorized or not
     def wrapper(*args, **kwargs):
         if "google_id" not in session:  #authorization required
@@ -57,15 +56,12 @@ def login_is_required(function):  #a function to check if the user is authorized
 @app.route('/home')
 @login_is_required
 def home():
-    # return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
     user = session['name']
-    # email = session['email']
     print(session)
-    return render_template('home.html', user=user, session=session) #, email=email)
+    return render_template('home.html', user=user, session=session)
 
 @app.route('/')
 def index():
-    # return "Hello World <a href='/login'><button>Login</button></a>"
     return render_template('login.html')
 
 @app.route('/list_rides')
