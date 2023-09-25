@@ -2,3 +2,4 @@ venv/
 __pyache__
 .env
 client_secret.json
+__pyache__
